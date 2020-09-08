@@ -1,0 +1,15 @@
+[package]
+name = "libocc"
+version = "0.0.0"
+authors = ["Bernd-L <git@bernd.pw>"]
+edition = "2018"
+license = "AGPL-3.0-or-later"
+repository = "https://github.com/Bernd-L/libocc-rs"
+homepage = "https://github.com/Bernd-L/libocc-rs#readme"
+readme = "README.md"
+documentation = "https://docs.rs/libocc-rs"
+include = ["/README.md", "/LICENSE.md", "/Cargo.toml", "/Cargo.lock", "/src"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]

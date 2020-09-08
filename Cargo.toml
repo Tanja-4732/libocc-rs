@@ -8,6 +8,7 @@ repository = "https://github.com/Bernd-L/libocc-rs"
 homepage = "https://github.com/Bernd-L/libocc-rs#readme"
 readme = "README.md"
 documentation = "https://docs.rs/libocc-rs"
+description = "A library for occasionally connected computing"
 include = ["/README.md", "/LICENSE.md", "/Cargo.toml", "/Cargo.lock", "/src"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

@@ -1,3 +1,3 @@
 mod projector;
 
-pub use projector::Projector;
+pub use projector::*;

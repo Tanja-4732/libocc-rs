@@ -1,3 +1,3 @@
-trait Projector<T> {
+pub trait Projector<T> {
   fn project(&self) -> Vec<T>;
 }

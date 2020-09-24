@@ -1,12 +1,12 @@
 use crate::typings;
 use std::time;
 
-pub struct Projector<T> {
+pub struct Projector<T: Clone + PartialEq> {
   pub event_log: Vec<typings::Event<T>>,
   projection: Vec<T>,
 }
 
-impl<T> Projector<T> {
+impl<T: Clone + PartialEq> Projector<T> {
   pub fn new(event_log: Vec<typings::Event<T>>) -> Projector<T> {
     Projector {
       projection: Self::project_all(&event_log),

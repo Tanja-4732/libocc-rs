@@ -1,47 +1,55 @@
-use crate::typings::{self, At};
+use crate::typings;
+use std::time;
 
-struct Projector<T> {
+pub struct Projector<T> {
   pub event_log: Vec<typings::Event<T>>,
   projection: Vec<T>,
 }
 
 impl<T> Projector<T> {
   pub fn new(event_log: Vec<typings::Event<T>>) -> Projector<T> {
-    let ret = Projector {
+    Projector {
+      projection: Self::project_all(&event_log),
       event_log,
-      projection: vec![],
-    };
-
-    Self::parse(&ret.event_log);
-
-    ret
+    }
   }
 
   /// Applies an event to the projection and adds
   /// it to the event log of this instance.
   pub fn add_event(&mut self, event: typings::Event<T>) {
+    Self::project_one(&mut self.projection, &event);
     self.event_log.push(event);
-    Self::parse_one(&mut self.projection, &event);
   }
 
   /// Projects an event log onto a returned list of entities
-  ///
-  /// The `at` parameter specifies until when the event log should be
-  /// projected from. Using `Latest` will return the cached projection instead.
-  pub fn project(&self, at: typings::At) -> &Vec<T> {
-    match at {
-      At::Latest => &self.projection,
-      At::Date(d) => vec![],
-    }
-  }
+  pub fn project_at(&self, at: time::Instant) -> Vec<T> {
+    // Create a new list
+    let mut list: Vec<T> = Vec::new();
 
-  fn parse(event_log: &Vec<typings::Event<T>>) -> Vec<T> {
-    let list = vec![];
+    // Iterate over all events in teh event log until the target date
+    // & project the event onto the list
+    self
+      .event_log
+      .iter()
+      .take_while(|event| event.date <= at)
+      .for_each(|event| Self::project_one(&mut list, &event));
 
-    // TODO parse the event log
-
+    // Return the entity-list from the projected events
     list
   }
 
-  fn parse_one(list: &mut Vec<T>, event: &typings::Event<T>) {}
+  fn project_all(event_log: &Vec<typings::Event<T>>) -> Vec<T> {
+    // Create a new list
+    let mut list: Vec<T> = Vec::new();
+
+    // Iterate over all events in teh event log until the target date
+    event_log
+      .iter()
+      .for_each(|event| Self::project_one(&mut list, &event));
+
+    // Return the entity-list from the projected events
+    list
+  }
+
+  fn project_one(list: &mut Vec<T>, event: &typings::Event<T>) {}
 }

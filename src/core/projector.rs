@@ -1,4 +1,4 @@
-use crate::typings;
+use crate::typings::{self, CRUD};
 use std::time;
 
 pub struct Projector<T: Clone + PartialEq> {
@@ -51,5 +51,27 @@ impl<T: Clone + PartialEq> Projector<T> {
     list
   }
 
-  fn project_one(list: &mut Vec<T>, event: &typings::Event<T>) {}
+  fn project_one(list: &mut Vec<T>, event: &typings::Event<T>) {
+    let element = list.iter().find(|el| el == &&event.data);
+
+    match event.operation {
+      CRUD::Create => {
+        if let Some(_) = element {
+          // TODO return an error
+        } else {
+          list.push(event.data.clone());
+        }
+      }
+      CRUD::Update => {
+        if let Some(el) = element {
+          // TODO splice list with `el`
+        } else {
+          // TODO return an error
+        }
+      }
+      CRUD::Delete => {
+        // TODO delete the element
+      }
+    };
+  }
 }

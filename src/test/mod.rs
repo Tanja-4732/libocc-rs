@@ -31,12 +31,14 @@ mod tests {
 
     println!("Empty repository:");
     println!("{:?}\n", books.get_projection());
+    assert_eq!(books.get_projection().len(), 0);
 
     // Add a new book
     books.create(my_book.clone());
 
     println!("Repository after creating new book:");
     println!("{:?}\n", books.get_projection());
+    assert_eq!(books.get_projection().get(0).unwrap().another_number, 234);
 
     let old_date = time::Instant::now();
 
@@ -49,8 +51,13 @@ mod tests {
 
     println!("Repository after updating the book:");
     println!("{:?}\n", books.get_projection());
+    assert_eq!(books.get_projection().get(0).unwrap().another_number, 42);
 
     println!("Repository before the book was updated:");
     println!("{:?}\n", books.project_at(&old_date));
+    assert_eq!(
+      books.project_at(&old_date).get(0).unwrap().another_number,
+      234
+    );
   }
 }

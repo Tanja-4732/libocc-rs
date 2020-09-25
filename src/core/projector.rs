@@ -52,25 +52,29 @@ impl<T: Clone + PartialEq> Projector<T> {
   }
 
   fn project_one(list: &mut Vec<T>, event: &typings::Event<T>) {
-    let element = list.iter().find(|el| el == &&event.data);
+    let maybe_i = list.iter().position(|el| el == &event.data);
 
     match event.operation {
       CRUD::Create => {
-        if let Some(_) = element {
+        if let Some(_) = maybe_i {
           // TODO return an error
         } else {
           list.push(event.data.clone());
         }
       }
       CRUD::Update => {
-        if let Some(el) = element {
-          // TODO splice list with `el`
+        if let Some(i) = maybe_i {
+          list.splice(i..i, vec![event.data.clone()]);
         } else {
           // TODO return an error
         }
       }
       CRUD::Delete => {
-        // TODO delete the element
+        if let Some(i) = maybe_i {
+          list.splice(i..i, vec![]);
+        } else {
+          // TODO return an error
+        }
       }
     };
   }

@@ -3,7 +3,7 @@ use std::time;
 
 pub struct Projector<T: Clone + PartialEq> {
   pub event_log: Vec<typings::Event<T>>,
-  projection: Vec<T>,
+  pub projection: Vec<T>,
 }
 
 impl<T: Clone + PartialEq> Projector<T> {

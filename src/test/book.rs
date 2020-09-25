@@ -1,5 +1,6 @@
 use super::person::Person;
 
+#[derive(Debug, Clone)]
 pub struct Book {
   pub uuid: String,
 
@@ -14,5 +15,11 @@ pub struct Book {
 
   // TODO implement some kind of field hider
   // // Does not have #[property], so it should not be included
-  hidden_property: String,
+  pub hidden_property: String,
+}
+
+impl PartialEq for Book {
+  fn eq(&self, other: &Self) -> bool {
+    self.uuid == other.uuid
+  }
 }

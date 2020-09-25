@@ -1,3 +1,4 @@
+#[derive(Debug, PartialEq, Clone)]
 pub struct Person {
   // #[property]
   pub first_name: String,

@@ -1,12 +1,24 @@
 use crate::typings::{self, CRUD};
 use std::time;
 
+/// The `Projector` struct uses a list of [`Event`s] to generate a projection of entities.
+///
+/// The projection is simply a `Vector` containing all entities of the type `T` at a specified moment in time.
+///
+/// You can also use the [`Repository`] struct to abstract the [`Event`s] away.
+///
+/// [`Event`s]: ../typings/event/struct.Event.html
+/// [`Repository`]: repository/struct.Repository.html
 pub struct Projector<T: Clone + PartialEq> {
+  /// The ordered list of events used to generate the projection
   pub event_log: Vec<typings::Event<T>>,
+
+  /// The resulting projection from the event log
   pub projection: Vec<T>,
 }
 
 impl<T: Clone + PartialEq> Projector<T> {
+  /// Constructs a new `Projector` given an event log (may be `vec![]`)
   pub fn new(event_log: Vec<typings::Event<T>>) -> Projector<T> {
     Projector {
       projection: Self::project_all(&event_log),

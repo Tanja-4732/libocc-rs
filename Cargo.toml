@@ -7,7 +7,7 @@ license = "AGPL-3.0-or-later"
 repository = "https://github.com/Bernd-L/libocc-rs"
 homepage = "https://github.com/Bernd-L/libocc-rs#readme"
 readme = "README.md"
-documentation = "https://docs.rs/libocc-rs"
+documentation = "https://docs.rs/libocc"
 description = "A library for occasionally connected computing"
 include = ["/README.md", "/LICENSE.md", "/Cargo.toml", "/Cargo.lock", "/src"]
 

@@ -22,7 +22,7 @@ impl<T: Clone + PartialEq> Projector<T> {
   }
 
   /// Projects an event log onto a returned list of entities
-  pub fn project_at(&self, at: time::Instant) -> Vec<T> {
+  pub fn project_at(&self, at: &time::Instant) -> Vec<T> {
     // Create a new list
     let mut list: Vec<T> = Vec::new();
 
@@ -31,7 +31,7 @@ impl<T: Clone + PartialEq> Projector<T> {
     self
       .event_log
       .iter()
-      .take_while(|event| event.date <= at)
+      .take_while(|event| &event.date <= at)
       .for_each(|event| Self::project_one(&mut list, &event));
 
     // Return the entity-list from the projected events

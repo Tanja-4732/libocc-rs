@@ -41,8 +41,8 @@ impl<T: Clone + PartialEq> Repository<T> {
     &self.projector.projection
   }
 
-  pub fn project_at(&self, at: time::Instant) -> Vec<T> {
-    self.projector.project_at(at)
+  pub fn project_at(&self, at: &time::Instant) -> Vec<T> {
+    self.projector.project_at(&at)
   }
 
   pub fn persist_data<R>(&mut self, persist_fn: fn(event_log: &Vec<typings::Event<T>>) -> R) -> R {

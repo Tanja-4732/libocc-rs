@@ -2,10 +2,8 @@ mod book;
 mod person;
 
 mod tests {
-  use crate::{core, typings};
-
   use super::{book, person};
-
+  use crate::core;
   use std::{thread, time};
 
   #[test]

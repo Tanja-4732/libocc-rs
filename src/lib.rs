@@ -12,16 +12,56 @@
 //!
 //!
 //! ```
+//!
+//! # #[derive(Debug, PartialEq, Clone)]
+//! # struct Person {
+//! #   // #[property]
+//! #   pub first_name: String,
+//! #
+//! #   // #[property]
+//! #   pub last_name: String,
+//! # }
+//! #
+//! #
+//! #
+//! # #[derive(Debug, Clone)]
+//! #  struct Book {
+//! #   pub uuid: String,
+//! #
+//! #   // #[property]
+//! #   pub some_number: usize,
+//! #
+//! #   // #[property]
+//! #   pub another_number: usize,
+//! #
+//! #   // #[property]
+//! #   pub author: Person,
+//! #
+//! #   // TODO implement some kind of field hider
+//! #   // // Does not have #[property], so it should not be included
+//! #   pub hidden_property: String,
+//! # }
+//! #
+//! # impl PartialEq for Book {
+//! #   fn eq(&self, other: &Self) -> bool {
+//! #     self.uuid == other.uuid
+//! #   }
+//! # }
+//! #
+//! #
+//! # use std::{thread, time};
+//! use libocc::core;
+//!
 //! fn test_repo() {
 //!   // Create a new book
-//!   let mut my_book = book::Book {
+//!   let mut my_book = Book {
 //!     uuid: String::from("some-uuid"),
 //!
 //!     some_number: 1234,
 //!
 //!     another_number: 234,
 //!
-//!     author: person::Person {
+//!     author: Person {
 //!       first_name: String::from(""),
 //!       last_name: String::from(""),
 //!     },
@@ -30,7 +70,7 @@
 //!   };
 //!
 //!   // Create a new projector of type `Book`
-//!   let mut books = core::Repository::<book::Book>::new(vec![]);
+//!   let mut books = core::Repository::<Book>::new(vec![]);
 //!
 //!   println!("Empty repository:");
 //!   println!("{:?}\n", books.get_projection());

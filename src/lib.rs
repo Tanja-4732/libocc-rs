@@ -9,8 +9,6 @@
 //! or use the [`Projector`] struct to access the lower-level operations of event projection.
 //!
 //!
-//!
-//!
 //! ```
 //!
 //! # #[derive(Debug, PartialEq, Clone)]

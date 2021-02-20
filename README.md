@@ -6,6 +6,12 @@ A port of [libocc-ts](https://github.com/Bernd-L/libocc-ts) (the TypeScript vers
 
 See the docs at <https://docs.rs/libocc/>
 
+## TODO
+
+- [ ] Implement a Serde serializer
+- [ ] Implement a Serde deserializer
+- [ ] Implement some kind of sync-server
+
 ## Example
 
 ```Rust

@@ -66,15 +66,7 @@ fn test_repo() {
 
 ## TODO
 
-- [ ] Data model
-  - [ ] Select a serialization format suitable for both Rust and TypeScript data
-    - Maybe JSON?
-    - Or:
-      - [ ] Implement a Serde serializer
-      - [ ] Implement a Serde deserializer
-  - [ ] Decide on how to replay events
-    - Partial structs (incremental updates)
-    - Whole-struct versioning (replacing updates)
+- Data model
   - [ ] Implement self-describing hashes
     - Probably use multiformats
 - [ ] Implement some kind of sync-server
@@ -82,10 +74,15 @@ fn test_repo() {
     - Maybe use a SQL database (PostgreSQL)
     - Maybe use SQLite
     - Maybe use a Rust-native storage format
-    - ~~Maybe use a Git repository~~
   - [ ] Implement communication
     - [ ] RESTful API over HTTP
-    - [ ] Maybe some WebSocket stuff?
+- Future stuff
+  - Custom data model (JSON alternative)
+    - [ ] Implement a Serde serializer
+    - [ ] Implement a Serde deserializer
+  - [ ] Maybe some WebSocket stuff?
+  - [ ] Persistance using a Git repository
+  - [ ] Support incremental updates
 
 ## Licence & Copyright
 

@@ -6,11 +6,7 @@ A port of [libocc-ts](https://github.com/Bernd-L/libocc-ts) (the TypeScript vers
 
 See the docs at <https://docs.rs/libocc/>
 
-## TODO
-
-- [ ] Implement a Serde serializer
-- [ ] Implement a Serde deserializer
-- [ ] Implement some kind of sync-server
+See the [TODO section](#todo) below.
 
 ## Example
 
@@ -67,3 +63,40 @@ fn test_repo() {
   );
 }
 ```
+
+## TODO
+
+- [ ] Data model
+  - [ ] Select a serialization format suitable for both Rust and TypeScript data
+    - Maybe JSON?
+    - Or:
+      - [ ] Implement a Serde serializer
+      - [ ] Implement a Serde deserializer
+  - [ ] Decide on how to replay events
+    - Partial structs (incremental updates)
+    - Whole-struct versioning (replacing updates)
+  - [ ] Implement self-describing hashes
+    - Probably use multiformats
+- [ ] Implement some kind of sync-server
+  - [ ] Decide on how to handle persistency
+    - Maybe use a SQL database (PostgreSQL)
+    - Maybe use SQLite
+    - Maybe use a Rust-native storage format
+    - ~~Maybe use a Git repository~~
+  - [ ] Implement communication
+    - [ ] RESTful API over HTTP
+    - [ ] Maybe some WebSocket stuff?
+
+## Licence & Copyright
+
+Copyright (c) 2020-2021 Bernd-L. All rights reserved.
+
+![AGPL v3: Free as in Freedom](https://www.gnu.org/graphics/agplv3-with-text-162x68.png)
+
+libocc-rs is free software: you can redistribute it and/or modify it under the terms of the [GNU Affero General Public License](/LICENSE.md) as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+libocc-rs is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the [GNU Affero General Public License](/LICENSE.md) for more details.
+
+You should have received a copy of the [GNU Affero General Public License](/LICENSE.md) along with libocc-rs. If not, see <https://www.gnu.org/licenses/>.
+
+This project (including its source code and its documentation) is released under the terms of the [GNU Affero General Public License](/LICENSE.md).

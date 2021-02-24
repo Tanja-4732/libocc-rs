@@ -113,5 +113,6 @@ fn test_repo() {
 #[cfg(test)]
 mod test;
 
-pub mod core;
-pub mod typings;
+mod core;
+
+pub use crate::core::*;

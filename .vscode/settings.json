@@ -1,6 +1,7 @@
 {
   "cSpell.words": [
     "Serde",
+    "chrono",
     "libocc",
     "println",
     "struct",

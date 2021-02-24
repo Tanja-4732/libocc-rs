@@ -1,7 +1,6 @@
-use serde::{Deserialize, Serialize};
-
 use crate::typings;
-use std::time;
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 
 /**
 The `Event` struct usually is part of a list of events called an "event log".
@@ -9,9 +8,13 @@ Each event represents an atomic change in an entity (including its creation or d
 Every event log only contains one entity type:
 Two entity types should have two separate event logs.
 */
-pub struct Event<'a, T: Clone + PartialEq + Serialize + Deserialize<'a>> {
+#[derive(Serialize, Deserialize, PartialEq, Clone)]
+pub struct Event
+// where
+//     T: Clone + PartialEq + Serialize,
+{
     /// The moment in time the event occurred
-    pub date: time::Instant,
+    pub date: DateTime<Utc>,
 
     /// The [`CRUD`] operation type of this event
     ///
@@ -24,5 +27,5 @@ pub struct Event<'a, T: Clone + PartialEq + Serialize + Deserialize<'a>> {
     ///
     /// This can be any type of data, as long as the traits
     /// `Clone` and `PartialEq` are implemented.
-    pub data: T,
+    pub data: String,
 }

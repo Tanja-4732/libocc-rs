@@ -1,6 +1,22 @@
 use crate::typings;
 use chrono::{DateTime, Utc};
-use serde::{Deserialize, Serialize};
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
+
+/// The CRUD operation type
+#[derive(Clone, PartialEq, Serialize)]
+pub enum Event<T>
+where
+    T: Clone + PartialEq + Serialize + DeserializeOwned,
+{
+    /// The operation type of an event creating a new entity
+    Create(EventContent<T>),
+
+    /// The operation type of an event mutating an existing entity
+    Update(EventContent<T>),
+
+    /// The operation type of an event deleting an entity
+    Delete(EventContent<T>),
+}
 
 /**
 The `Event` struct usually is part of a list of events called an "event log".
@@ -8,24 +24,66 @@ Each event represents an atomic change in an entity (including its creation or d
 Every event log only contains one entity type:
 Two entity types should have two separate event logs.
 */
-#[derive(Serialize, Deserialize, PartialEq, Clone)]
-pub struct Event
-// where
-//     T: Clone + PartialEq + Serialize,
+#[derive(Serialize, PartialEq, Clone)]
+pub struct EventContent<T>
+where
+    T: Clone + PartialEq + Serialize + DeserializeOwned,
 {
     /// The moment in time the event occurred
-    pub date: DateTime<Utc>,
-
-    /// The [`CRUD`] operation type of this event
-    ///
-    /// Specifies if this event creates, updates or deletes an entity
-    ///
-    /// [`CRUD`]: crud/enum.CRUD.html
-    pub operation: typings::CRUD,
+    date: DateTime<Utc>,
 
     /// The entity after the occurrence of this event
     ///
     /// This can be any type of data, as long as the traits
     /// `Clone` and `PartialEq` are implemented.
-    pub data: String,
+    data: T,
+}
+
+impl<T> Event<T>
+where
+    T: Clone + PartialEq + Serialize + DeserializeOwned,
+{
+    /// Constructs a new create event
+    pub fn create(data: T) -> Self {
+        Self::Create(EventContent {
+            date: Utc::now(),
+            data,
+        })
+    }
+
+    /// Constructs a new update event
+    pub fn update(data: T) -> Self {
+        Self::Update(EventContent {
+            date: Utc::now(),
+            data,
+        })
+    }
+
+    /// Constructs a new delete event
+    pub fn delete(data: T) -> Self {
+        Self::Delete(EventContent {
+            date: Utc::now(),
+            data,
+        })
+    }
+
+    /// Borrow the contained data
+    pub fn borrow(&self) -> &T {
+        &match self {
+            Self::Create(ref data) => data,
+            Self::Update(ref data) => data,
+            Self::Delete(ref data) => data,
+        }
+        .data
+    }
+
+    /// Borrow the date of the event
+    pub fn get_time(&self) -> &DateTime<Utc> {
+        &match self {
+            Self::Create(ref data) => data,
+            Self::Update(ref data) => data,
+            Self::Delete(ref data) => data,
+        }
+        .date
+    }
 }

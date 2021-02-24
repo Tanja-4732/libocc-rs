@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 use crate::typings;
 use chrono::{DateTime, Utc};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
@@ -30,7 +32,7 @@ where
     T: Clone + PartialEq + Serialize + DeserializeOwned,
 {
     /// The moment in time the event occurred
-    date: DateTime<Utc>,
+    timestamp: DateTime<Utc>,
 
     /// The entity after the occurrence of this event
     ///
@@ -46,7 +48,7 @@ where
     /// Constructs a new create event
     pub fn create(data: T) -> Self {
         Self::Create(EventContent {
-            date: Utc::now(),
+            timestamp: Utc::now(),
             data,
         })
     }
@@ -54,7 +56,7 @@ where
     /// Constructs a new update event
     pub fn update(data: T) -> Self {
         Self::Update(EventContent {
-            date: Utc::now(),
+            timestamp: Utc::now(),
             data,
         })
     }
@@ -62,7 +64,7 @@ where
     /// Constructs a new delete event
     pub fn delete(data: T) -> Self {
         Self::Delete(EventContent {
-            date: Utc::now(),
+            timestamp: Utc::now(),
             data,
         })
     }
@@ -84,6 +86,19 @@ where
             Self::Update(ref data) => data,
             Self::Delete(ref data) => data,
         }
-        .date
+        .timestamp
+    }
+
+    /// Compare two events based on their timestamps
+    pub fn compare(&self, other: &Self) -> Ordering {
+        let (t1, t2) = (self.get_time(), other.get_time());
+
+        if t1 < t2 {
+            Ordering::Less
+        } else if t1 > t2 {
+            Ordering::Greater
+        } else {
+            Ordering::Equal
+        }
     }
 }

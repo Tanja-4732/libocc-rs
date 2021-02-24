@@ -1,9 +1,11 @@
-use std::cmp::Ordering;
-
 use chrono::{DateTime, Utc};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use std::cmp::Ordering;
+
+use crate::Timestamp;
 
 /// The CRUD operation type
+// TODO derive Deserialize
 #[derive(Clone, PartialEq, Serialize)]
 pub enum Event<T>
 where
@@ -31,7 +33,7 @@ where
     T: Clone + PartialEq + Serialize + DeserializeOwned,
 {
     /// The moment in time the event occurred
-    timestamp: DateTime<Utc>,
+    timestamp: Timestamp,
 
     /// The entity after the occurrence of this event
     ///
@@ -79,7 +81,7 @@ where
     }
 
     /// Borrow the date of the event
-    pub fn get_time(&self) -> &DateTime<Utc> {
+    pub fn get_time(&self) -> &Timestamp {
         &match self {
             Self::Create(ref data) => data,
             Self::Update(ref data) => data,

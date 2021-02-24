@@ -6,10 +6,14 @@
 //! [`Repository`]: repository/struct.Repository.html
 //! [`Projector`]: projector/struct.Projector.html
 
+use chrono::{DateTime, Utc};
+
 mod event;
 mod projector;
-mod repository;
+// mod repository;
 
 pub use event::*;
 pub use projector::*;
-pub use repository::*;
+// pub use repository::*;
+
+pub type Timestamp = DateTime<Utc>;

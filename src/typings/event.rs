@@ -101,4 +101,14 @@ where
             Ordering::Equal
         }
     }
+
+    /// Consumes the event, returning the contained data
+    pub fn take(self) -> T {
+        match self {
+            Self::Create(data) => data,
+            Self::Update(data) => data,
+            Self::Delete(data) => data,
+        }
+        .data
+    }
 }

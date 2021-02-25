@@ -1,8 +1,7 @@
-use chrono::{DateTime, Utc};
+use crate::Timestamp;
+use chrono::Utc;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use std::cmp::Ordering;
-
-use crate::Timestamp;
 
 /// The CRUD operation type
 // TODO derive Deserialize
@@ -73,9 +72,7 @@ where
     /// Borrow the contained data
     pub fn borrow(&self) -> &T {
         &match self {
-            Self::Create(ref data) => data,
-            Self::Update(ref data) => data,
-            Self::Delete(ref data) => data,
+            Self::Create(ref data) | Self::Update(ref data) | Self::Delete(ref data) => data,
         }
         .data
     }
@@ -83,9 +80,7 @@ where
     /// Borrow the date of the event
     pub fn get_time(&self) -> &Timestamp {
         &match self {
-            Self::Create(ref data) => data,
-            Self::Update(ref data) => data,
-            Self::Delete(ref data) => data,
+            Self::Create(ref data) | Self::Update(ref data) | Self::Delete(ref data) => data,
         }
         .timestamp
     }
@@ -106,9 +101,7 @@ where
     /// Consumes the event, returning the contained data
     pub fn take(self) -> T {
         match self {
-            Self::Create(data) => data,
-            Self::Update(data) => data,
-            Self::Delete(data) => data,
+            Self::Create(data) | Self::Update(data) | Self::Delete(data) => data,
         }
         .data
     }

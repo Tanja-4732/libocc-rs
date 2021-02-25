@@ -16,4 +16,5 @@ pub use event::*;
 pub use projector::*;
 // pub use repository::*;
 
+/// The timestamp type used in this library
 pub type Timestamp = DateTime<Utc>;

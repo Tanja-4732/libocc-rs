@@ -2,7 +2,7 @@ use crate::{Event, Timestamp};
 use anyhow::{anyhow, bail, Result};
 use chrono::Utc;
 use serde::{de::DeserializeOwned, Serialize};
-use std::{mem::replace, unimplemented};
+use std::{borrow::Borrow, mem::replace, unimplemented};
 
 /**
 A segment is a part of an event log.
@@ -52,17 +52,35 @@ where
         }
     }
 
+    /// Returns a shared reference to the timestamp of this segment
     pub fn get_time(&self) -> &Timestamp {
         &self.timestamp
     }
 
-    pub fn project_at(&self, timestamp: Timestamp) -> Option<&Vec<T>> {
+    /// Projects the segments events predating a specified timestamp onto a given snapshot
+    pub fn project_at_onto(&self, timestamp: Timestamp, snapshot: Vec<T>) -> Option<Vec<T>> {
         // Check for timestamps before the segment started
         if timestamp < self.timestamp {
             return None;
         };
 
-        unimplemented!()
+        // A new vector to store the projection to be created
+        // TODO maybe use the segments snapshot (this means it needs another snapshot at its beginning)
+        let mut projection = snapshot;
+
+        // Project all events up to (and including) the specified timestamp
+        for event in &self.events {
+            // Check if the specified predates the next event
+            if event.get_time() > &timestamp {
+                break;
+            }
+
+            // Apply the event to the projection
+            Self::apply_event_to(&mut projection, event.clone()).ok()?;
+        }
+
+        // Return the projection
+        Some(projection)
     }
 
     /// Applies and appends an event to the segments snapshot and log, respectively (checked)
@@ -99,10 +117,15 @@ where
         Ok(())
     }
 
-    /// Modifies the snapshot to reflect the changes of the event
+    /// Modifies the segments snapshot to reflect the changes of the event
     fn apply_event(&mut self, event: Event<T>) -> Result<()> {
+        Self::apply_event_to(&mut self.snapshot, event)
+    }
+
+    /// Modifies a given snapshot to reflect the changes of the event
+    fn apply_event_to(snapshot: &mut Vec<T>, event: Event<T>) -> Result<()> {
         // The pre-existing element
-        let prev_position = self.snapshot.iter_mut().position(|e| e == event.borrow());
+        let prev_position = snapshot.iter_mut().position(|e| e == event.borrow());
 
         match &event {
             Event::Create(_) => {
@@ -112,7 +135,7 @@ where
                 }
 
                 // Insert the new element
-                self.snapshot.push(event.take());
+                snapshot.push(event.take());
 
                 // Return Ok
                 Ok(())
@@ -120,7 +143,7 @@ where
             Event::Update(_) => {
                 if let Some(index) = prev_position {
                     // Perform the replacement
-                    *self.snapshot.get_mut(index).unwrap() = event.take();
+                    *snapshot.get_mut(index).unwrap() = event.take();
 
                     // Return Ok
                     Ok(())
@@ -131,7 +154,7 @@ where
             Event::Delete(_) => {
                 if let Some(index) = prev_position {
                     // Perform the deletion
-                    self.snapshot.remove(index);
+                    snapshot.remove(index);
 
                     // Return Ok
                     Ok(())

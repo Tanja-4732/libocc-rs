@@ -10,10 +10,12 @@ use chrono::{DateTime, Utc};
 
 mod event;
 mod projector;
+mod segment;
 // mod repository;
 
 pub use event::*;
 pub use projector::*;
+pub use segment::*;
 // pub use repository::*;
 
 /// The timestamp type used in this library

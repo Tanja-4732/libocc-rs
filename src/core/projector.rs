@@ -37,7 +37,8 @@ where
         unimplemented!()
     }
 
+    /// Pushes an event onto the latest segment
     pub fn push(&mut self, event: Event<T>) {
-        self.segments.last_mut().unwrap().events.push(event);
+        self.segments.last_mut().unwrap().push(event);
     }
 }

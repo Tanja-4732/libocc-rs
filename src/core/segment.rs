@@ -65,12 +65,32 @@ where
         unimplemented!()
     }
 
+    /// Applies and appends an event to the segments snapshot and log, respectively (checked)
     pub fn push(&mut self, event: Event<T>) -> Result<()> {
-        unimplemented!()
+        // Get the time of the new event
+        let new_event_time = event.get_time();
+
+        // Check if the new event predates the segments timestamp
+        if new_event_time < &self.timestamp {
+            bail!("Cannot accept events before the segment started")
+        } else
+        // Check if the new event predates the latest event stored in this segment (if it exists)
+        if let Some(last_event_time) = self.events.last().map(|event| event.get_time()) {
+            if new_event_time < last_event_time {
+                bail!("Cannot accept events predating the lastest logged event")
+            }
+        }
+
+        // Perform the push using push_unchecked
+        self.push_unchecked(event)?;
+
+        // Return Ok
+        Ok(())
     }
 
-    pub fn push_unchecked(&mut self, event: Event<T>) -> Result<()> {
-        // Apply the event tto the snapshot
+    /// Applies and appends an event to the segments snapshot and log, respectively (unchecked)
+    fn push_unchecked(&mut self, event: Event<T>) -> Result<()> {
+        // Apply the event to the snapshot
         self.apply_event(event.clone())?;
 
         // Push the event onto the event log
@@ -79,6 +99,7 @@ where
         Ok(())
     }
 
+    /// Modifies the snapshot to reflect the changes of the event
     fn apply_event(&mut self, event: Event<T>) -> Result<()> {
         // The pre-existing element
         let prev_position = self.snapshot.iter_mut().position(|e| e == event.borrow());

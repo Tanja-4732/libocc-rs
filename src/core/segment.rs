@@ -57,6 +57,11 @@ where
         &self.timestamp
     }
 
+    /// Returns the current projection
+    pub fn get_projection(&self) -> &Vec<T> {
+        &self.snapshot
+    }
+
     /// Projects the segments events predating a specified timestamp onto a given snapshot
     pub fn project_at_onto(&self, timestamp: Timestamp, snapshot: Vec<T>) -> Option<Vec<T>> {
         // Check for timestamps before the segment started

@@ -1,8 +1,7 @@
 use crate::{Event, Timestamp};
-use anyhow::{anyhow, bail, Result};
+use anyhow::{bail, Result};
 use chrono::Utc;
 use serde::{de::DeserializeOwned, Serialize};
-use std::{borrow::Borrow, mem::replace, unimplemented};
 
 /**
 A segment is a part of an event log.
@@ -44,6 +43,7 @@ where
         Self::from_projection(vec![], vec![])
     }
 
+    /// Creates a new segment from a given projection and event log at the current time
     pub fn from_projection(projection: Vec<T>, events: Vec<Event<T>>) -> Segment<T> {
         Self {
             timestamp: Utc::now(),

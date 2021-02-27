@@ -63,9 +63,9 @@ where
     }
 
     /// Projects the segments events predating a specified timestamp onto a given snapshot
-    pub fn project_at_onto(&self, timestamp: Timestamp, snapshot: Vec<T>) -> Option<Vec<T>> {
+    pub fn project_at_onto(&self, timestamp: &Timestamp, snapshot: Vec<T>) -> Option<Vec<T>> {
         // Check for timestamps before the segment started
-        if timestamp < self.timestamp {
+        if timestamp < &self.timestamp {
             return None;
         };
 
@@ -76,7 +76,7 @@ where
         // Project all events up to (and including) the specified timestamp
         for event in &self.events {
             // Check if the specified predates the next event
-            if event.get_time() > &timestamp {
+            if event.get_time() > timestamp {
                 break;
             }
 

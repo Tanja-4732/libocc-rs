@@ -27,14 +27,34 @@ where
         }
     }
 
-    pub fn project_at(&self, timestamp: &Timestamp) -> Option<&Vec<T>> {
-        let latest_segment = self
-            .segments
-            .iter()
-            .rev()
-            .find(|s| s.get_time() <= timestamp)?;
+    /// Performs a projection using a copy of the previous segments' snapshot if available
+    pub fn project_at(&self, timestamp: &Timestamp) -> Option<Vec<T>> {
+        // Find the segment containing the timestamp and the snapshot before it
+        let (containing_segment, snapshot) = {
+            // The position of the segment containing the requested timestamp
+            let latest_segment_pos = self
+                .segments
+                .iter()
+                .rev()
+                .position(|s| s.get_time() <= timestamp)?;
 
-        unimplemented!()
+            (
+                // The segment containing the timestamp
+                self.segments.get(latest_segment_pos)?,
+                // Check if another segment exists which could provide a snapshot for projection
+                if let Some(prev_segment) = self.segments.get(latest_segment_pos - 1) {
+                    // Return a copy of the snapshot of the previous segment
+                    prev_segment.get_projection().clone()
+                } else {
+                    // If no such snapshot exists (containing segment is the first or only one segment in total),
+                    // make a new vector on which to project the events of the containing segment onto
+                    vec![]
+                },
+            )
+        };
+
+        // Perform the projection
+        containing_segment.project_at_onto(timestamp, snapshot)
     }
 
     /// Pushes an event onto the latest segment

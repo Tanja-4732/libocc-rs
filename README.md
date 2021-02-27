@@ -1,5 +1,7 @@
 # libocc-rs
 
+[![dependency status](https://deps.rs/crate/libocc/0.2.0/status.svg)](https://deps.rs/crate/libocc/0.2.0)
+
 This library aims to provide a simple interface for developing event-sourced occasionally-connected-computing experiences.
 
 A port of [libocc-ts](https://github.com/Bernd-L/libocc-ts) (the TypeScript version of libocc)
@@ -11,56 +13,61 @@ See the [TODO section](#todo) below.
 ## Example
 
 ```Rust
-fn test_repo() {
-  // Create a new book
-  let mut my_book = book::Book {
-    uuid: String::from("some-uuid"),
+fn test_projector() {
+    // Create a new book
+    let mut my_book = book::Book {
+        uuid: Uuid::new_v4(),
+        some_number: 42,
+        author: person::Person {
+            uuid: Uuid::new_v4(),
+            first_name: String::from("Alex"),
+            last_name: String::from("Example"),
+        },
+    };
 
-    some_number: 1234,
+    // Create a new projector of type `Book`
+    let mut books = crate::Projector::<book::Book>::new();
 
-    another_number: 234,
+    // So far, the projector is empty.
+    println!("Empty projector:");
+    println!("{:?}\n", books.get_projection());
+    assert_eq!(books.get_projection().len(), 0);
 
-    author: person::Person {
-      first_name: String::from(""),
-      last_name: String::from(""),
-    },
+    // Add a new book
+    books.push(crate::Event::create(my_book.clone())).unwrap();
 
-    hidden_property: String::from("sneaky af"),
-  };
+    // The projector now contains the new book in its initial state
+    println!("Projector after creating new book:");
+    println!("{:?}\n", books.get_projection());
+    assert_eq!(books.get_projection().get(0).unwrap().some_number, 42);
 
-  // Create a new projector of type `Book`
-  let mut books = core::Repository::<book::Book>::new(vec![]);
+    // This timestamp will be used in the future to get a previous state of the book
+    let timestamp: crate::Timestamp = Utc::now();
 
-  println!("Empty repository:");
-  println!("{:?}\n", books.get_projection());
-  assert_eq!(books.get_projection().len(), 0);
+    // Some time later ... (simulated delay)
+    thread::sleep(time::Duration::from_millis(1));
 
-  // Add a new book
-  books.create(my_book.clone());
+    // Modify the book and save it in the projector
+    my_book.some_number = 123;
+    books.push(crate::Event::update(my_book.clone())).unwrap();
 
-  println!("Repository after creating new book:");
-  println!("{:?}\n", books.get_projection());
-  assert_eq!(books.get_projection().get(0).unwrap().another_number, 234);
+    // The projector now contains the new version of the book
+    println!("Projector after updating the book:");
+    println!("{:?}\n", books.get_projection());
+    assert_eq!(books.get_projection().get(0).unwrap().some_number, 123);
 
-  let old_date = time::Instant::now();
-
-  // Simulated delay
-  thread::sleep(time::Duration::from_secs(1));
-
-  // Modify the book
-  my_book.another_number = 42;
-  books.update(my_book.clone());
-
-  println!("Repository after updating the book:");
-  println!("{:?}\n", books.get_projection());
-  assert_eq!(books.get_projection().get(0).unwrap().another_number, 42);
-
-  println!("Repository before the book was updated:");
-  println!("{:?}\n", books.project_at(&old_date));
-  assert_eq!(
-    books.project_at(&old_date).get(0).unwrap().another_number,
-    234
-  );
+    // We can still retrieve the old version of the book (using the timestamp)
+    println!("Projector before the book was updated:");
+    println!("{:?}\n", books.project_at(&timestamp));
+    assert_eq!(
+        books
+            .project_at(&timestamp)
+            .unwrap()
+            .get(0)
+            .unwrap()
+            .some_number,
+        42
+    );
 }
 ```
 

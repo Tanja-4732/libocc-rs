@@ -1,8 +1,6 @@
 use crate::{Event, Segment, Timestamp};
-use anyhow::{anyhow, bail, Result};
-use chrono::Utc;
+use anyhow::Result;
 use serde::{de::DeserializeOwned, Serialize};
-use std::{mem::replace, unimplemented};
 
 /**
 Projects events from an event log

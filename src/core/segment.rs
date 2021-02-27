@@ -33,12 +33,10 @@ impl<T> Segment<T>
 where
     T: Clone + PartialEq + Serialize + DeserializeOwned,
 {
-    /**
-    Creates a new segment
-
-    The new segment will have a timestamp of the current time,
-    and won't have any prior history associated with it.
-    */
+    /// Creates a new segment
+    ///
+    /// The new segment will have a timestamp of the current time,
+    /// and won't have any prior history associated with it.
     pub fn new() -> Segment<T> {
         Self::from_projection(vec![], vec![])
     }

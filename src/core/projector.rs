@@ -46,9 +46,14 @@ where
                 // The segment containing the timestamp
                 self.segments.get(latest_segment_pos)?,
                 // Check if another segment exists which could provide a snapshot for projection
-                if let Some(prev_segment) = self.segments.get(latest_segment_pos - 1) {
+                if latest_segment_pos != 0 {
                     // Return a copy of the snapshot of the previous segment
-                    prev_segment.get_projection().clone()
+                    // Unwraps safely because there're at least two segments (because != 0)
+                    self.segments
+                        .get(latest_segment_pos - 1)
+                        .unwrap()
+                        .get_projection()
+                        .clone()
                 } else {
                     // If no such snapshot exists (containing segment is the first or only one segment in total),
                     // make a new vector on which to project the events of the containing segment onto

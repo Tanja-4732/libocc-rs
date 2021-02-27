@@ -68,4 +68,17 @@ where
         // Unwraps safely because there's always at least one segment
         self.segments.last_mut().unwrap().push(event)
     }
+
+    /// Makes a new snapshot of the projector by creating a new segment
+    pub fn make_snapshot(&mut self) {
+        // Get the latest segment
+        // Unwraps safely because there's always at least one segment
+        let latest_segment = self.segments.last().unwrap();
+
+        // Make a new segment with the previously-latest segments snapshot
+        let new_segment = Segment::from_projection(latest_segment.get_projection().clone(), vec![]);
+
+        // Push the new segment onto the segments vector of this projector
+        self.segments.push(new_segment);
+    }
 }

@@ -39,8 +39,7 @@ where
             let latest_segment_pos = self
                 .segments
                 .iter()
-                .rev()
-                .position(|s| s.get_time() <= timestamp)?;
+                .rposition(|s| s.get_time() <= timestamp)?;
 
             (
                 // The segment containing the timestamp

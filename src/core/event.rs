@@ -1,7 +1,10 @@
 use crate::Timestamp;
 use chrono::Utc;
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{de::DeserializeOwned, Serialize};
 use std::cmp::Ordering;
+
+// TODO make Event and EventContent Deserialize
+// use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 /// The CRUD operation type
 // TODO derive Deserialize

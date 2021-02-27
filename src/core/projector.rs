@@ -27,9 +27,15 @@ where
         }
     }
 
+    /// Returns the current (cached) projection as a shared reference
+    pub fn get_projection(&self) -> &Vec<T> {
+        // Unwraps safely because there's always at least one segment
+        self.segments.last().unwrap().get_projection()
+    }
+
     /// Performs a projection using a copy of the previous segments' snapshot if available
     pub fn project_at(&self, timestamp: &Timestamp) -> Option<Vec<T>> {
-        // Find the segment containing the timestamp and the snapshot before it
+        // Find the segment containing the timestamp and the snapshot before it (if available)
         let (containing_segment, snapshot) = {
             // The position of the segment containing the requested timestamp
             let latest_segment_pos = self
@@ -57,8 +63,9 @@ where
         containing_segment.project_at_onto(timestamp, snapshot)
     }
 
-    /// Pushes an event onto the latest segment
-    pub fn push(&mut self, event: Event<T>) {
-        self.segments.last_mut().unwrap().push(event);
+    /// Pushes an event onto the latest segment, updating the projection
+    pub fn push(&mut self, event: Event<T>) -> Result<()> {
+        // Unwraps safely because there's always at least one segment
+        self.segments.last_mut().unwrap().push(event)
     }
 }

@@ -1,5 +1,5 @@
 use crate::{Event, Timestamp};
-use anyhow::{bail, Result};
+use anyhow::{anyhow, bail, Result};
 use chrono::Utc;
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -166,5 +166,43 @@ where
                 }
             }
         }
+    }
+
+    /// Merges two consecutive segments by prepending the other before this one (checked)
+    pub fn prepend(&mut self, other: Self) -> Result<()> {
+        // Avoid a panic in append()
+        self.events
+            .len()
+            .checked_add(other.events.len())
+            .ok_or(anyhow!("Cannot merge segments exceeding usize"))?;
+
+        // Check if this segment predates the newest event of the other one
+        if self.get_time()
+            < other
+                .events
+                .last()
+                .map(|e| e.get_time())
+                .unwrap_or(other.get_time())
+        {
+            bail!("Cannot prepend another segment if this one predates it")
+        }
+
+        // Perform the prepend
+        self.prepend_unchecked(other);
+
+        // Return Ok
+        Ok(())
+    }
+
+    /// Merges two consecutive segments by prepending the other before this one (unchecked)
+    pub fn prepend_unchecked(&mut self, mut other: Self) {
+        // Append the new events onto the old ones
+        other.events.append(&mut self.events);
+
+        // Replace the current (now empty) list with the old (appended) one
+        self.events = other.events;
+
+        // Replace the timestamp of this segment with the one from the other
+        self.timestamp = other.timestamp;
     }
 }

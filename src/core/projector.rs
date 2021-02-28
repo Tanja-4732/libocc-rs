@@ -33,33 +33,30 @@ where
 
     /// Performs a projection using a copy of the previous segments' snapshot if available
     pub fn project_at(&self, timestamp: &Timestamp) -> Option<Vec<T>> {
-        // Find the segment containing the timestamp and the snapshot before it (if available)
-        let (containing_segment, snapshot) = {
-            // The position of the segment containing the requested timestamp
-            let latest_segment_pos = self
-                .segments
-                .iter()
-                .rposition(|s| s.get_time() <= timestamp)?;
+        // Find the segment containing the timestamp (if available):
+        // The position of the segment containing the requested timestamp
+        let latest_segment_pos = self
+            .segments
+            .iter()
+            .rposition(|s| s.get_time() <= timestamp)?;
 
-            (
-                // The segment containing the timestamp
-                // Unwraps safely because the index was found previously
-                self.segments.get(latest_segment_pos).unwrap(),
-                // Check if another segment exists which could provide a snapshot for projection
-                if latest_segment_pos != 0 {
-                    // Return a copy of the snapshot of the previous segment
-                    // Unwraps safely because there're at least two segments (because != 0)
-                    self.segments
-                        .get(latest_segment_pos - 1)
-                        .unwrap()
-                        .get_projection()
-                        .clone()
-                } else {
-                    // If no such snapshot exists (containing segment is the first or only one segment in total),
-                    // make a new vector on which to project the events of the containing segment onto
-                    vec![]
-                },
-            )
+        // The segment containing the timestamp
+        // Unwraps safely because the index was found previously
+        let containing_segment = self.segments.get(latest_segment_pos).unwrap();
+
+        // Check if another segment exists which could provide a snapshot for projection
+        let snapshot = if latest_segment_pos != 0 {
+            // Return a copy of the snapshot of the previous segment
+            // Unwraps safely because there're at least two segments (because != 0)
+            self.segments
+                .get(latest_segment_pos - 1)
+                .unwrap()
+                .get_projection()
+                .clone()
+        } else {
+            // If no such snapshot exists (containing segment is the first or only one segment in total),
+            // make a new vector on which to project the events of the containing segment onto
+            vec![]
         };
 
         // Perform the projection

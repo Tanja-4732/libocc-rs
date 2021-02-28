@@ -1,5 +1,5 @@
 use crate::{Event, Segment, Timestamp};
-use anyhow::Result;
+use anyhow::{anyhow, bail, Result};
 use serde::{de::DeserializeOwned, Serialize};
 
 /**
@@ -43,7 +43,8 @@ where
 
             (
                 // The segment containing the timestamp
-                self.segments.get(latest_segment_pos)?,
+                // Unwraps safely because the index was found previously
+                self.segments.get(latest_segment_pos).unwrap(),
                 // Check if another segment exists which could provide a snapshot for projection
                 if latest_segment_pos != 0 {
                     // Return a copy of the snapshot of the previous segment
@@ -82,5 +83,39 @@ where
 
         // Push the new segment onto the segments vector of this projector
         self.segments.push(new_segment);
+    }
+
+    /// Attempts to merge two segments/snapshots.  
+    /// The one including the timestamp and the one before it (if any)
+    pub fn merge_at(&mut self, timestamp: &Timestamp) -> Result<()> {
+        // Find the segment containing the timestamp (if available):
+        // The position of the segment containing the requested timestamp
+        let latest_segment_pos = self
+            .segments
+            .iter()
+            .rposition(|s| s.get_time() <= timestamp)
+            .ok_or(anyhow!(
+                "Cannot find segment containing the requested timestamp"
+            ))?;
+
+        // Find the snapshot before it the one containing the timestamp (if available)
+        // Check if another segment exists which could provide a snapshot for projection
+        let predating_segment = if latest_segment_pos != 0 {
+            // Return the previous segment
+            // Remove is safe because there're at least two segments (because != 0)
+            self.segments.remove(latest_segment_pos - 1)
+        } else {
+            // If no such snapshot exists (containing segment is the first or only one segment in total),
+            // return an error, as merging is impossible
+            bail!("Cannot find a preceding segment")
+        };
+
+        // The segment containing the timestamp
+        self.segments
+            .get_mut(latest_segment_pos)
+            // Unwraps safely because the index was found previously
+            .unwrap()
+            // Perform the merge
+            .prepend(predating_segment)
     }
 }

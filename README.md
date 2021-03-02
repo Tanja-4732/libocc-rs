@@ -1,6 +1,6 @@
 # libocc-rs
 
-[![dependency status](https://deps.rs/crate/libocc/0.3.0/status.svg)](https://deps.rs/crate/libocc/0.3.0)
+[![dependency status](https://deps.rs/crate/libocc/0.4.0/status.svg)](https://deps.rs/crate/libocc/0.4.0)
 
 This library aims to provide a simple interface for developing event-sourced occasionally-connected-computing experiences.
 

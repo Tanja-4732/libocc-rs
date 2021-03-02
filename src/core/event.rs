@@ -1,17 +1,14 @@
 use crate::Timestamp;
 use chrono::Utc;
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
-
-// TODO make Event and EventContent Deserialize
-// use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 /// The CRUD operation type
 // TODO derive Deserialize
-#[derive(Clone, PartialEq, Serialize)]
+#[derive(Clone, PartialEq, Serialize, Debug, Deserialize)]
 pub enum Event<T>
 where
-    T: Clone + PartialEq + Serialize + DeserializeOwned,
+    T: Clone + PartialEq,
 {
     /// The operation type of an event creating a new entity
     Create(EventContent<T>),
@@ -29,10 +26,10 @@ Each event represents an atomic change in an entity (including its creation or d
 Every event log only contains one entity type:
 Two entity types should have two separate event logs.
 */
-#[derive(Serialize, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Serialize, Debug, Deserialize)]
 pub struct EventContent<T>
 where
-    T: Clone + PartialEq + Serialize + DeserializeOwned,
+    T: Clone + PartialEq,
 {
     /// The moment in time the event occurred
     timestamp: Timestamp,
@@ -46,7 +43,7 @@ where
 
 impl<T> Event<T>
 where
-    T: Clone + PartialEq + Serialize + DeserializeOwned,
+    T: Clone + PartialEq,
 {
     /// Constructs a new create event
     pub fn create(data: T) -> Self {

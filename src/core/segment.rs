@@ -1,7 +1,7 @@
 use crate::{Event, Timestamp};
 use anyhow::{anyhow, bail, Result};
 use chrono::Utc;
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Deserialize, Serialize};
 
 /**
 A segment is a part of an event log.
@@ -15,9 +15,10 @@ Snapshots allow for faster history traversal, as not the
 entire event log needs to be replayed in order to project
 an earlier state, unlike a single-segment event log.
 */
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Segment<T>
 where
-    T: Clone + PartialEq + Serialize + DeserializeOwned,
+    T: Clone + PartialEq,
 {
     /// The earliest data captured by this segment
     timestamp: Timestamp,
@@ -31,7 +32,7 @@ where
 
 impl<T> Segment<T>
 where
-    T: Clone + PartialEq + Serialize + DeserializeOwned,
+    T: Clone + PartialEq,
 {
     /// Creates a new segment
     ///

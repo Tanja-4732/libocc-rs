@@ -1,22 +1,23 @@
 use crate::{Event, Segment, Timestamp};
 use anyhow::{anyhow, bail, Result};
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Deserialize, Serialize};
 
 /**
 Projects events from an event log
 
 Manages several segments internally
 */
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Projector<T>
 where
-    T: Clone + PartialEq + Serialize + DeserializeOwned,
+    T: Clone + PartialEq,
 {
     segments: Vec<Segment<T>>,
 }
 
 impl<T> Projector<T>
 where
-    T: Clone + PartialEq + Serialize + DeserializeOwned,
+    T: Clone + PartialEq,
 {
     /// Generates a new projector for a given type
     pub fn new() -> Projector<T> {

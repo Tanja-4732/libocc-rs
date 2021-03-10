@@ -16,7 +16,7 @@ entire event log needs to be replayed in order to project
 an earlier state, unlike a single-segment event log.
 */
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Segment<T>
+pub struct Segment<'a, T>
 where
     T: Clone + PartialEq,
 {
@@ -27,10 +27,10 @@ where
     snapshot: Vec<T>,
 
     /// The event log of this segment
-    events: Vec<Event<T>>,
+    events: Vec<Event<'a, T>>,
 }
 
-impl<T> Segment<T>
+impl<'a, T> Segment<'a, T>
 where
     T: Clone + PartialEq,
 {
@@ -38,7 +38,7 @@ where
     ///
     /// The new segment will have a timestamp of the current time,
     /// and won't have any prior history associated with it.
-    pub fn new() -> Segment<T> {
+    pub fn new() -> Segment<'a, T> {
         Self::from_projection(vec![], vec![])
     }
 

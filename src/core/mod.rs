@@ -6,7 +6,7 @@
 //! [`Repository`]: repository/struct.Repository.html
 //! [`Projector`]: projector/struct.Projector.html
 
-use chrono::{DateTime, Utc};
+use chrono::DateTime;
 
 mod event;
 mod projector;
@@ -20,3 +20,4 @@ pub use segment::*;
 
 /// The timestamp type used in this library
 pub type Timestamp = DateTime<Utc>;
+pub use chrono::Utc;

@@ -8,19 +8,19 @@ Projects events from an event log
 Manages several segments internally
 */
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Projector<T>
+pub struct Projector<'a, T>
 where
     T: Clone + PartialEq,
 {
-    segments: Vec<Segment<T>>,
+    segments: Vec<Segment<'a, T>>,
 }
 
-impl<T> Projector<T>
+impl<'a, T> Projector<'_, T>
 where
     T: Clone + PartialEq,
 {
     /// Generates a new projector for a given type
-    pub fn new() -> Projector<T> {
+    pub fn new() -> Projector<'a, T> {
         Self {
             segments: vec![Segment::new()],
         }

@@ -2,6 +2,7 @@ use crate::{Event, Timestamp};
 use anyhow::{anyhow, bail, Result};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /**
 A segment is a part of an event log.
@@ -24,7 +25,7 @@ where
     timestamp: Timestamp,
 
     /// The latest projection from this segment
-    snapshot: Vec<T>,
+    snapshot: Vec<Cow<'a, T>>,
 
     /// The event log of this segment
     events: Vec<Event<'a, T>>,
@@ -43,7 +44,10 @@ where
     }
 
     /// Creates a new segment from a given projection and event log at the current time
-    pub fn from_projection(projection: Vec<T>, events: Vec<Event<T>>) -> Segment<T> {
+    pub fn from_projection(
+        projection: Vec<Cow<'a, T>>,
+        events: Vec<Event<'a, T>>,
+    ) -> Segment<'a, T> {
         Self {
             timestamp: Utc::now(),
             snapshot: projection,
@@ -57,12 +61,16 @@ where
     }
 
     /// Returns the current projection
-    pub fn get_projection(&self) -> &Vec<T> {
+    pub fn get_projection(&self) -> &Vec<Cow<'a, T>> {
         &self.snapshot
     }
 
     /// Projects the segments events predating a specified timestamp onto a given snapshot
-    pub fn project_at_onto(&self, timestamp: &Timestamp, snapshot: Vec<T>) -> Option<Vec<T>> {
+    pub fn project_at_onto(
+        &self,
+        timestamp: &Timestamp,
+        snapshot: Vec<Cow<'a, T>>,
+    ) -> Option<Vec<Cow<'a, T>>> {
         // Check for timestamps before the segment started
         if timestamp < &self.timestamp {
             return None;
@@ -88,7 +96,7 @@ where
     }
 
     /// Applies and appends an event to the segments snapshot and log, respectively (checked)
-    pub fn push(&mut self, event: Event<T>) -> Result<()> {
+    pub fn push(&mut self, event: Event<'a, T>) -> Result<()> {
         // Get the time of the new event
         let new_event_time = event.get_time();
 
@@ -111,7 +119,7 @@ where
     }
 
     /// Applies and appends an event to the segments snapshot and log, respectively (unchecked)
-    fn push_unchecked(&mut self, event: Event<T>) -> Result<()> {
+    fn push_unchecked(&mut self, event: Event<'a, T>) -> Result<()> {
         // Apply the event to the snapshot
         self.apply_event(event.clone())?;
 
@@ -122,14 +130,14 @@ where
     }
 
     /// Modifies the segments snapshot to reflect the changes of the event
-    fn apply_event(&mut self, event: Event<T>) -> Result<()> {
+    fn apply_event(&mut self, event: Event<'a, T>) -> Result<()> {
         Self::apply_event_to(&mut self.snapshot, event)
     }
 
     /// Modifies a given snapshot to reflect the changes of the event
-    fn apply_event_to(snapshot: &mut Vec<T>, event: Event<T>) -> Result<()> {
+    fn apply_event_to(snapshot: &mut Vec<Cow<'a, T>>, event: Event<'a, T>) -> Result<()> {
         // The pre-existing element
-        let prev_position = snapshot.iter_mut().position(|e| e == event.borrow());
+        let prev_position = snapshot.iter_mut().position(|e| **e == *event);
 
         match &event {
             Event::Create(_) => {

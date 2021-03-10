@@ -1,6 +1,7 @@
 use crate::{Event, Segment, Timestamp};
 use anyhow::{anyhow, bail, Result};
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /**
 Projects events from an event log
@@ -15,7 +16,7 @@ where
     segments: Vec<Segment<'a, T>>,
 }
 
-impl<'a, T> Projector<'_, T>
+impl<'a, T> Projector<'a, T>
 where
     T: Clone + PartialEq,
 {
@@ -27,13 +28,13 @@ where
     }
 
     /// Returns the current (cached) projection as a shared reference
-    pub fn get_projection(&self) -> &Vec<T> {
+    pub fn get_projection(&self) -> &Vec<Cow<'a, T>> {
         // Unwraps safely because there's always at least one segment
         self.segments.last().unwrap().get_projection()
     }
 
     /// Performs a projection using a copy of the previous segments' snapshot if available
-    pub fn project_at(&self, timestamp: &Timestamp) -> Option<Vec<T>> {
+    pub fn project_at(&self, timestamp: &Timestamp) -> Option<Vec<Cow<'a, T>>> {
         // Find the segment containing the timestamp (if available):
         // The position of the segment containing the requested timestamp
         let latest_segment_pos = self
@@ -65,7 +66,7 @@ where
     }
 
     /// Pushes an event onto the latest segment, updating the projection
-    pub fn push(&mut self, event: Event<T>) -> Result<()> {
+    pub fn push(&mut self, event: Event<'a, T>) -> Result<()> {
         // Unwraps safely because there's always at least one segment
         self.segments.last_mut().unwrap().push(event)
     }

@@ -1,7 +1,10 @@
 use crate::{Event, Segment, Timestamp};
 use anyhow::{anyhow, bail, Result};
 use serde::{Deserialize, Serialize};
-use std::borrow::Cow;
+use std::{
+    borrow::{Borrow, Cow},
+    ops::Deref,
+};
 
 /**
 Projects events from an event log
@@ -37,10 +40,7 @@ where
     pub fn project_at(&self, timestamp: &Timestamp) -> Option<Vec<Cow<'a, T>>> {
         // Find the segment containing the timestamp (if available):
         // The position of the segment containing the requested timestamp
-        let latest_segment_pos = self
-            .segments
-            .iter()
-            .rposition(|s| s.get_time() <= timestamp)?;
+        let latest_segment_pos = self.get_latest_segment_pos(timestamp)?;
 
         // The segment containing the timestamp
         // Unwraps safely because the index was found previously
@@ -63,6 +63,16 @@ where
 
         // Perform the projection
         containing_segment.project_at_onto(timestamp, snapshot)
+    }
+
+    /// Find the segment containing the timestamp (if available):  
+    /// The position of the segment containing the requested timestamp
+    fn get_latest_segment_pos(&self, timestamp: &chrono::DateTime<chrono::Utc>) -> Option<usize> {
+        let latest_segment_pos = self
+            .segments
+            .iter()
+            .rposition(|s| s.get_time() <= timestamp)?;
+        Some(latest_segment_pos)
     }
 
     /// Pushes an event onto the latest segment, updating the projection
@@ -116,5 +126,58 @@ where
             .unwrap()
             // Perform the merge
             .prepend(predating_segment)
+    }
+
+    /// Returns a reference to all segments held by this projector
+    pub fn get_segments(&self) -> &Vec<Segment<'a, T>> {
+        &self.segments
+    }
+
+    /// Returns a vector containing references to all events in this projector's segments
+    /// after a given timestamp. The returned vector may be empty if no events occurred.
+    pub fn get_events_from(&self, starting_date: &Timestamp) -> Vec<&Event<'a, T>> {
+        let mut events = vec![];
+
+        // Find the segment containing the timestamp (if available):
+        // The position of the segment containing the requested timestamp
+        if let Some(latest_segment_pos) = self.get_latest_segment_pos(starting_date) {
+            // The segment containing the timestamp
+            // Unwraps safely because the index was found previously
+            let containing_segment = self.segments.get(latest_segment_pos).unwrap();
+
+            if let Some(position) = containing_segment
+                .get_events()
+                .iter()
+                .rposition(|e| e.get_time() <= starting_date)
+            {
+                // Append the current events
+                containing_segment
+                    .get_events()
+                    .iter()
+                    .skip(position)
+                    .for_each(|event| events.push(event));
+
+                // Append the events from the following segments (if any)
+                self.segments
+                    .iter()
+                    .skip(latest_segment_pos + 1)
+                    .for_each(|s| s.get_events().iter().for_each(|e| events.push(e)));
+            }
+        }
+
+        // Return the events
+        events
+    }
+}
+
+impl<'a, T> Deref for Projector<'a, T>
+where
+    T: Clone + PartialEq,
+{
+    type Target = Vec<Segment<'a, T>>;
+
+    /// Returns a reference to all segments held by this projector
+    fn deref(&self) -> &Self::Target {
+        &self.segments
     }
 }

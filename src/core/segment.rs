@@ -214,4 +214,8 @@ where
         // Replace the timestamp of this segment with the one from the other
         self.timestamp = other.timestamp;
     }
+
+    pub(super) fn get_events(&self) -> &Vec<Event<'a, T>> {
+        &self.events
+    }
 }

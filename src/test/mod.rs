@@ -1,7 +1,7 @@
 mod book;
 mod person;
 use chrono::Utc;
-use std::{thread, time};
+use std::{borrow::Cow, thread, time};
 use uuid::Uuid;
 
 #[test]
@@ -26,7 +26,9 @@ fn test_projector() {
     assert_eq!(books.get_projection().len(), 0);
 
     // Add a new book
-    books.push(crate::Event::create(my_book.clone())).unwrap();
+    books
+        .push(crate::Event::create(Cow::Owned(my_book.clone())))
+        .unwrap();
 
     // The projector now contains the new book in its initial state
     println!("Projector after creating new book:");
@@ -41,7 +43,9 @@ fn test_projector() {
 
     // Modify the book and save it in the projector
     my_book.some_number = 123;
-    books.push(crate::Event::update(my_book.clone())).unwrap();
+    books
+        .push(crate::Event::update(Cow::Borrowed(&my_book)))
+        .unwrap();
 
     // The projector now contains the new version of the book
     println!("Projector after updating the book:");
@@ -84,7 +88,9 @@ fn test_snapshots() {
     assert_eq!(books.get_projection().len(), 0);
 
     // Add a new book
-    books.push(crate::Event::create(my_book.clone())).unwrap();
+    books
+        .push(crate::Event::create(Cow::Owned(my_book.clone())))
+        .unwrap();
 
     // The projector now contains the new book in its initial state
     println!("Projector after creating new book:");
@@ -102,7 +108,9 @@ fn test_snapshots() {
 
     // Modify the book and save it in the projector
     my_book.some_number = 123;
-    books.push(crate::Event::update(my_book.clone())).unwrap();
+    books
+        .push(crate::Event::update(Cow::Owned(my_book.clone())))
+        .unwrap();
 
     // The projector now contains the new version of the book
     println!("Projector after updating the book:");
@@ -145,7 +153,9 @@ fn test_many_change_after_snapshots() {
     assert_eq!(books.get_projection().len(), 0);
 
     // Add a new book
-    books.push(crate::Event::create(my_book.clone())).unwrap();
+    books
+        .push(crate::Event::create(Cow::Owned(my_book.clone())))
+        .unwrap();
 
     // The projector now contains the new book in its initial state
     println!("Projector after creating new book:");
@@ -163,7 +173,9 @@ fn test_many_change_after_snapshots() {
 
     // Modify the book and save it in the projector
     my_book.some_number = 123;
-    books.push(crate::Event::update(my_book.clone())).unwrap();
+    books
+        .push(crate::Event::update(Cow::Owned(my_book.clone())))
+        .unwrap();
 
     // This timestamp will be used in the future to get a previous state of the book
     let timestamp_2: crate::Timestamp = Utc::now();
@@ -183,7 +195,9 @@ fn test_many_change_after_snapshots() {
 
     // Modify the book and save it in the projector
     my_book.some_number = 321;
-    books.push(crate::Event::update(my_book.clone())).unwrap();
+    books
+        .push(crate::Event::update(Cow::Owned(my_book.clone())))
+        .unwrap();
 
     // The projector now contains the new version of the book
     println!("Projector after updating the book:");

@@ -1,10 +1,7 @@
 use crate::{Event, Segment, Timestamp};
 use anyhow::{anyhow, bail, Result};
 use serde::{Deserialize, Serialize};
-use std::{
-    borrow::{Borrow, Cow},
-    ops::Deref,
-};
+use std::{borrow::Cow, ops::Deref};
 
 /**
 Projects events from an event log

@@ -1,5 +1,5 @@
-#![warn(missing_docs)]
-#![warn(missing_doc_code_examples)]
+#![deny(missing_docs)]
+#![deny(missing_doc_code_examples)]
 
 /*!
 This crate offers versioned CRUD operations for entities.

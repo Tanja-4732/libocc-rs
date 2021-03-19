@@ -1,6 +1,6 @@
 # libocc-rs
 
-[![dependency status](https://deps.rs/crate/libocc/0.4.0/status.svg)](https://deps.rs/crate/libocc/0.4.0)
+[![dependency status](https://deps.rs/crate/libocc/0.5.0/status.svg)](https://deps.rs/crate/libocc/0.5.0)
 
 This library aims to provide a simple interface for developing event-sourced occasionally-connected-computing experiences.
 
@@ -34,7 +34,9 @@ fn test_projector() {
     assert_eq!(books.get_projection().len(), 0);
 
     // Add a new book
-    books.push(crate::Event::create(my_book.clone())).unwrap();
+    books
+        .push(crate::Event::create(Cow::Owned(my_book.clone())))
+        .unwrap();
 
     // The projector now contains the new book in its initial state
     println!("Projector after creating new book:");
@@ -49,7 +51,9 @@ fn test_projector() {
 
     // Modify the book and save it in the projector
     my_book.some_number = 123;
-    books.push(crate::Event::update(my_book.clone())).unwrap();
+    books
+        .push(crate::Event::update(Cow::Borrowed(&my_book)))
+        .unwrap();
 
     // The projector now contains the new version of the book
     println!("Projector after updating the book:");

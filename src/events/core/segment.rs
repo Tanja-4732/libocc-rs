@@ -219,3 +219,12 @@ where
         &self.events
     }
 }
+
+impl<'a, T> Default for Segment<'a, T>
+where
+    T: Clone + PartialEq,
+{
+    fn default() -> Self {
+        Self::new()
+    }
+}

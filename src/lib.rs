@@ -17,3 +17,4 @@ or use the [`Projector`] struct to access the lower-level operations of event pr
 mod test;
 
 pub mod events;
+pub mod tree;

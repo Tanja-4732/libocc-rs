@@ -100,9 +100,7 @@ where
             .segments
             .iter()
             .rposition(|s| s.get_time() <= timestamp)
-            .ok_or(anyhow!(
-                "Cannot find segment containing the requested timestamp"
-            ))?;
+            .ok_or_else(|| anyhow!("Cannot find segment containing the requested timestamp"))?;
 
         // Find the snapshot before it the one containing the timestamp (if available)
         // Check if another segment exists which could provide a snapshot for projection

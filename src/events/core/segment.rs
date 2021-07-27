@@ -183,7 +183,7 @@ where
         self.events
             .len()
             .checked_add(other.events.len())
-            .ok_or(anyhow!("Cannot merge segments exceeding usize"))?;
+            .ok_or_else(|| anyhow!("Cannot merge segments exceeding usize"))?;
 
         // Check if this segment predates the newest event of the other one
         if self.get_time()
@@ -191,7 +191,7 @@ where
                 .events
                 .last()
                 .map(|e| e.get_time())
-                .unwrap_or(other.get_time())
+                .unwrap_or_else(|| other.get_time())
         {
             bail!("Cannot prepend another segment if this one predates it")
         }

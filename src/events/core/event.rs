@@ -87,15 +87,7 @@ where
 
     /// Compare two events based on their timestamps
     fn compare_timestamps(&self, other: &Self) -> Ordering {
-        let (t1, t2) = (self.get_time(), other.get_time());
-
-        if t1 < t2 {
-            Ordering::Less
-        } else if t1 > t2 {
-            Ordering::Greater
-        } else {
-            Ordering::Equal
-        }
+        self.get_time().cmp(other.get_time())
     }
 
     /// Consumes the event, returning the contained data

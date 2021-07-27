@@ -167,6 +167,15 @@ where
     }
 }
 
+impl<'a, T> Default for Projector<'a, T>
+where
+    T: Clone + PartialEq,
+{
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<'a, T> Deref for Projector<'a, T>
 where
     T: Clone + PartialEq,

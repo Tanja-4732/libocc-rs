@@ -16,6 +16,4 @@ or use the [`Projector`] struct to access the lower-level operations of event pr
 #[cfg(test)]
 mod test;
 
-mod core;
-
-pub use crate::core::*;
+pub mod events;

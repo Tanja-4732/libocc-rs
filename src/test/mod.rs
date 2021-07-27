@@ -18,7 +18,7 @@ fn test_projector() {
     };
 
     // Create a new projector of type `Book`
-    let mut books = crate::Projector::<book::Book>::new();
+    let mut books = crate::events::Projector::<book::Book>::new();
 
     // So far, the projector is empty.
     println!("Empty projector:");
@@ -27,7 +27,7 @@ fn test_projector() {
 
     // Add a new book
     books
-        .push(crate::Event::create(Cow::Owned(my_book.clone())))
+        .push(crate::events::Event::create(Cow::Owned(my_book.clone())))
         .unwrap();
 
     // The projector now contains the new book in its initial state
@@ -36,7 +36,7 @@ fn test_projector() {
     assert_eq!(books.get_projection().get(0).unwrap().some_number, 42);
 
     // This timestamp will be used in the future to get a previous state of the book
-    let timestamp: crate::Timestamp = Utc::now();
+    let timestamp: crate::events::Timestamp = Utc::now();
 
     // Some time later ... (simulated delay)
     thread::sleep(time::Duration::from_millis(1));
@@ -44,7 +44,7 @@ fn test_projector() {
     // Modify the book and save it in the projector
     my_book.some_number = 123;
     books
-        .push(crate::Event::update(Cow::Borrowed(&my_book)))
+        .push(crate::events::Event::update(Cow::Borrowed(&my_book)))
         .unwrap();
 
     // The projector now contains the new version of the book
@@ -80,7 +80,7 @@ fn test_snapshots() {
     };
 
     // Create a new projector of type `Book`
-    let mut books = crate::Projector::<book::Book>::new();
+    let mut books = crate::events::Projector::<book::Book>::new();
 
     // So far, the projector is empty.
     println!("Empty projector:");
@@ -89,7 +89,7 @@ fn test_snapshots() {
 
     // Add a new book
     books
-        .push(crate::Event::create(Cow::Owned(my_book.clone())))
+        .push(crate::events::Event::create(Cow::Owned(my_book.clone())))
         .unwrap();
 
     // The projector now contains the new book in its initial state
@@ -98,7 +98,7 @@ fn test_snapshots() {
     assert_eq!(books.get_projection().get(0).unwrap().some_number, 42);
 
     // This timestamp will be used in the future to get a previous state of the book
-    let timestamp: crate::Timestamp = Utc::now();
+    let timestamp: crate::events::Timestamp = Utc::now();
 
     // Some time later ... (simulated delay)
     thread::sleep(time::Duration::from_millis(1));
@@ -109,7 +109,7 @@ fn test_snapshots() {
     // Modify the book and save it in the projector
     my_book.some_number = 123;
     books
-        .push(crate::Event::update(Cow::Owned(my_book.clone())))
+        .push(crate::events::Event::update(Cow::Owned(my_book.clone())))
         .unwrap();
 
     // The projector now contains the new version of the book
@@ -145,7 +145,7 @@ fn test_many_change_after_snapshots() {
     };
 
     // Create a new projector of type `Book`
-    let mut books = crate::Projector::<book::Book>::new();
+    let mut books = crate::events::Projector::<book::Book>::new();
 
     // So far, the projector is empty.
     println!("Empty projector:");
@@ -154,7 +154,7 @@ fn test_many_change_after_snapshots() {
 
     // Add a new book
     books
-        .push(crate::Event::create(Cow::Owned(my_book.clone())))
+        .push(crate::events::Event::create(Cow::Owned(my_book.clone())))
         .unwrap();
 
     // The projector now contains the new book in its initial state
@@ -163,7 +163,7 @@ fn test_many_change_after_snapshots() {
     assert_eq!(books.get_projection().get(0).unwrap().some_number, 42);
 
     // This timestamp will be used in the future to get a previous state of the book
-    let timestamp: crate::Timestamp = Utc::now();
+    let timestamp: crate::events::Timestamp = Utc::now();
 
     // Some time later ... (simulated delay)
     thread::sleep(time::Duration::from_millis(1));
@@ -174,11 +174,11 @@ fn test_many_change_after_snapshots() {
     // Modify the book and save it in the projector
     my_book.some_number = 123;
     books
-        .push(crate::Event::update(Cow::Owned(my_book.clone())))
+        .push(crate::events::Event::update(Cow::Owned(my_book.clone())))
         .unwrap();
 
     // This timestamp will be used in the future to get a previous state of the book
-    let timestamp_2: crate::Timestamp = Utc::now();
+    let timestamp_2: crate::events::Timestamp = Utc::now();
 
     // Some time later ... (simulated delay)
     thread::sleep(time::Duration::from_millis(1));
@@ -196,7 +196,7 @@ fn test_many_change_after_snapshots() {
     // Modify the book and save it in the projector
     my_book.some_number = 321;
     books
-        .push(crate::Event::update(Cow::Owned(my_book.clone())))
+        .push(crate::events::Event::update(Cow::Owned(my_book.clone())))
         .unwrap();
 
     // The projector now contains the new version of the book

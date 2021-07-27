@@ -1,4 +1,4 @@
-use crate::{Event, Timestamp};
+use crate::events::{Event, Timestamp};
 use anyhow::{anyhow, bail, Result};
 use chrono::Utc;
 use serde::{Deserialize, Serialize};

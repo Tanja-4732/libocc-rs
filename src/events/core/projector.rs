@@ -1,4 +1,4 @@
-use crate::{Event, Segment, Timestamp};
+use crate::events::{Event, Segment, Timestamp};
 use anyhow::{anyhow, bail, Result};
 use serde::{Deserialize, Serialize};
 use std::{borrow::Cow, ops::Deref};

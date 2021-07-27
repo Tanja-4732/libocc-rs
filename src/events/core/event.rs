@@ -1,4 +1,4 @@
-use crate::Timestamp;
+use crate::events::Timestamp;
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use std::{borrow::Cow, cmp::Ordering, ops::Deref};

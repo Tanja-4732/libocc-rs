@@ -103,9 +103,9 @@ where
         // Check if the new event predates the segments timestamp
         if new_event_time < &self.timestamp {
             bail!("Cannot accept events before the segment started")
-        } else
+        } else if
         // Check if the new event predates the latest event stored in this segment (if it exists)
-        if let Some(last_event_time) = self.events.last().map(|event| event.get_time()) {
+        let Some(last_event_time) = self.events.last().map(|event| event.get_time()) {
             if new_event_time < last_event_time {
                 bail!("Cannot accept events predating the lastest logged event")
             }
